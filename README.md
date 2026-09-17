@@ -1,4 +1,4 @@
-# Classification of Chest X-Ray Images for Pediatric Pneumonia
+# Classification of Chest X-Ray Images (Pneumonia)
 
 A machine learning project for classifying pediatric chest X-ray images as **Pneumonia** or **Normal** using a Random Forest Classifier.
 
