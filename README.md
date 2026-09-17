@@ -10,7 +10,7 @@ A machine learning project for classifying pediatric chest X-ray images as **Pne
 
 Pneumonia remains an important cause of childhood morbidity and mortality. According to UNICEF, in its article *"A child dies of pneumonia every 43 seconds"* published in November 2025, pneumonia kills more than 700,000 children under five every year, including approximately 190,000 newborns.
 
-As a former Radiologic Technologist who worked in a public hospital, I encountered pneumonia frequently during chest X-ray examinations. These included community-acquired pneumonia as well as infections acquired within healthcare settings. Pneumonia was also frequently encountered as a severe complication associated with COVID-19.
+As a Radiologic Technologist who used to worked in a public hospital, I encountered pneumonia frequently during chest X-ray examinations. These included community-acquired pneumonia as well as infections acquired within healthcare settings also known as nosocomial infection. Pneumonia was also frequently encountered as a severe complication associated with COVID-19, a very common thing I see when I was active on duty during COVID-19 pandemic.
 
 This project explores whether a machine learning model can classify pediatric chest X-ray images into **Pneumonia** and **Normal** categories.
 
@@ -38,202 +38,90 @@ using pediatric chest X-ray images.
 ## Dataset
 
 **Dataset:** Chest X-Ray Images (Pneumonia)
+
 **Source:** Kaggle
+
+**Link:** https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
+
 **Categories:** Pneumonia and Normal
-**Images:** 5,863 JPEG images
 
-**Dataset:**
-https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia
+**Number of images:** 5,863 JPEG images
 
-The dataset is organized into three folders:
+The dataset is organized into three folders: train, test, and val, with images separated into the Pneumonia and Normal categories.
 
-```text
-chest_xray/
-├── train/
-│   ├── NORMAL/
-│   └── PNEUMONIA/
-├── test/
-│   ├── NORMAL/
-│   └── PNEUMONIA/
-└── val/
-    ├── NORMAL/
-    └── PNEUMONIA/
-```
+The images consist of anterior-posterior chest X-rays from pediatric patients between one and five years old from Guangzhou Women and Children’s Medical Center in Guangzhou, China. The radiographs were obtained as part of routine clinical care.
 
-The images consist of anterior-posterior chest X-rays from pediatric patients between one and five years old from Guangzhou Women and Children's Medical Center in Guangzhou, China.
-
-The radiographs were obtained as part of routine clinical care. Low-quality and unreadable scans were removed during quality control. Diagnoses were evaluated by two expert physicians, while the evaluation set was additionally reviewed by a third expert to help account for potential grading errors.
-
----
+For quality control, low-quality and unreadable scans were removed. The diagnoses were evaluated by two expert physicians, while the evaluation set was additionally reviewed by a third expert to help account for potential grading errors.
 
 ## Methodology
 
-### 1. Load the Images
+1. The chest X-ray images were loaded from the training and testing datasets.
+2. The images were converted into predictor data (X) while their corresponding categories, Pneumonia or Normal, were assigned as the target variable (y).
+3. The training and testing data were organized into separate predictor and target sets:
 
-The training and testing images were loaded from their respective folders.
-
-Each image was:
-
-* Converted to grayscale
-* Resized to **64 × 64 pixels**
-* Converted into a NumPy array
-* Flattened into a one-dimensional feature vector
-
-The target variable was the corresponding image category:
-
-```text
-NORMAL
-PNEUMONIA
-```
-
-### 2. Prepare the Data
-
-Separate predictor and target variables were created:
-
-```text
-X_train
-y_train
-X_test
-y_test
-```
-
-### 3. Train the Model
-
-A **Random Forest Classifier** was trained using the training dataset.
-
-```python
-RandomForestClassifier(random_state=42)
-```
-
-`random_state=42` was used to improve reproducibility.
-
-Random Forest is an ensemble classification algorithm that combines predictions from multiple decision trees.
-
-### 4. Evaluate the Model
-
-The model was evaluated using:
-
-* Confusion Matrix
-* Classification Report
-* Accuracy
-* Sensitivity
-* Specificity
-* ROC-AUC
-* ROC Curve
-
----
+   * `X_train`
+   * `y_train`
+   * `X_test`
+   * `y_test`
+4. A Random Forest Classifier was trained using the training data.
+5. The model was configured with `random_state=42` to improve reproducibility.
+6. Model performance was evaluated using a confusion matrix and classification report.
+7. ROC-AUC was also calculated to evaluate the model's ability to distinguish between the two classes across different classification thresholds.
+8. The ROC curve was plotted to visually examine the model's class-separation performance.
 
 ## Model
 
-### Random Forest Classifier
+Model used was a **Random Forest Classifier** with `random_state=42`.
 
-Random Forest combines multiple decision trees to produce a classification result.
+Random Forest is an ensemble classification algorithm that combines predictions from multiple decision trees. In this project, the chest X-ray images serve as the input data used by the classifier to learn patterns associated with the two target classes: Pneumonia and Normal. 
 
-In this project, the chest X-ray images were used as input features, while the target classes were **Pneumonia** and **Normal**.
+In concept if random forest based its decision on multiple trees this model based its decision on multiple images.
 
-The model was configured with:
 
-```python
-RandomForestClassifier(random_state=42)
-```
-
-No hyperparameter tuning was performed in the current implementation.
-
----
-
-## Results
+## Evaluation
 
 The model produced approximately the following results:
 
-| Metric      |     Result |
-| ----------- | ---------: |
-| Accuracy    | ~0.78–0.79 |
-| Sensitivity |      ~0.99 |
-| Specificity | ~0.41–0.45 |
-| ROC-AUC     |      ~0.94 |
+* **Accuracy:** ~0.78–0.79
+* **Sensitivity:** ~0.99
+* **Specificity:** ~0.41–0.45
+* **ROC-AUC:** ~0.94
 
-### Interpretation
+The accuracy was relatively stable across runs. However, accuracy alone does not fully describe the model's performance because the dataset contains substantially more Pneumonia images than Normal images.
 
-**Accuracy (~0.78–0.79)**
+The model achieved **very high sensitivity (~0.99)**, meaning that it identified almost all of the Pneumonia cases in the test data.
 
-Accuracy was relatively stable across runs. However, accuracy alone does not fully describe model performance because the dataset contains substantially more Pneumonia images than Normal images.
+However, its **specificity was considerably lower (~0.41–0.45)**. This means that the model had difficulty correctly identifying Normal cases and classified a substantial number of Normal images as Pneumonia.
 
-**Sensitivity (~0.99)**
+The **ROC-AUC of approximately 0.94** indicates that the model was able to distinguish between the two classes well across different classification thresholds.
 
-The model achieved very high sensitivity, meaning it identified almost all Pneumonia cases in the test data.
-
-**Specificity (~0.41–0.45)**
-
-Specificity was considerably lower. This means the model had difficulty correctly identifying Normal cases and classified a substantial number of Normal images as Pneumonia.
-
-**ROC-AUC (~0.94)**
-
-The ROC-AUC indicates strong class-separation ability across different classification thresholds.
-
-Overall, the results show a difference between the model's ability to separate the two classes and its performance at the default **0.5 classification threshold**.
-
----
-
-## ROC Curve
-
-The ROC curve was generated to examine the model's ability to distinguish between Pneumonia and Normal images across different classification thresholds.
-
-![ROC Curve](images/roc_curve.png)
-
----
+Therefore, the results show an important difference between the model's ability to separate the classes and its performance at the default 0.5 classification threshold.
 
 ## Conclusion
 
-The Random Forest model demonstrated strong class-separation performance, reflected by an ROC-AUC of approximately **0.94** and sensitivity of approximately **0.99**.
+The Random Forest model demonstrated strong class-separation performance, as reflected by the ROC-AUC of approximately 0.94 and the high sensitivity of approximately 0.99.
 
-However, the relatively low specificity indicates that the model frequently classified Normal images as Pneumonia at the default classification threshold.
+However, the relatively low specificity indicates that the model frequently classified Normal images as Pneumonia when using the default classification threshold.
 
-This demonstrates why classification performance should not be evaluated using accuracy alone. Sensitivity, specificity, and ROC-AUC provide additional information about how the model behaves.
+This suggests that the model's predictions should not be evaluated using accuracy alone. The classification threshold may also need to be examined depending on the intended application and the desired balance between detecting Pneumonia and correctly identifying Normal examinations.
 
-The model therefore demonstrates potential as an **experimental classification approach**, but further development and validation would be required before considering any application in an actual clinical workflow.
-
----
+The model therefore demonstrates potential as an experimental classification approach, but it would require further development and validation before it could be considered for use in an actual clinical workflow.
 
 ## Scope and Limitations
 
 * The dataset is limited to pediatric patients between approximately one and five years old.
-* The classification task is limited to two classes: Pneumonia and Normal.
-* The dataset contains substantially more Pneumonia images than Normal images, resulting in class imbalance.
-* The dataset originates from a specific clinical population and institution, which may limit generalization to other hospitals, populations, imaging equipment, and clinical settings.
-* Images were converted to grayscale and resized to 64 × 64 pixels, which may result in loss of visual information.
-* Random Forest may not be the most suitable approach for extracting complex spatial features from medical images.
-* No hyperparameter tuning was performed in the current implementation.
-* The validation set was not used because it contained only 16 images, which was considered insufficient for reliable validation.
-* The current implementation therefore uses the training set for model fitting and the test set for evaluation.
-* No hyperparameter tuning or threshold optimization was performed using a validation set.
-
----
-
-## Future Improvements
-
-Potential future improvements include:
-
-* Hyperparameter tuning
-* Using a larger and more balanced dataset
-* Evaluating additional classification models
-* Exploring Convolutional Neural Networks (CNNs)
-* Exploring transfer learning using pretrained image models
-* Investigating classification threshold optimization
-* Using a larger validation dataset
-* Evaluating model performance on external datasets
-* Investigating explainability methods for medical image classification
-
----
+* The task is limited to binary classification between Pneumonia and Normal.
+* The dataset contains substantially more Pneumonia images than Normal images, creating class imbalance.
+* The dataset originates from a specific clinical population and institution, which may limit how well the model generalizes to other hospitals, populations, imaging equipment, and clinical settings.
+* The validation set was not used because it contained only 16 images, which was considered insufficient for reliable validation of the model's performance. The current implementation used the training set for model fitting and the test set for final evaluation.
+* A separate validation set was not necessary for the current basic Random Forest implementation, as no hyperparameter tuning or threshold optimization was performed using a validation set.
 
 ## Ethical Considerations
 
-This model should be considered an **assistive tool rather than a replacement for clinical judgment**.
+An automated classification model should be considered an **assistive tool rather than a replacement for clinical judgment**.
 
-A positive model prediction should not be treated as a definitive diagnosis of Pneumonia. Final interpretation and diagnosis should remain the responsibility of qualified healthcare professionals, particularly radiologists and physicians who can consider the patient's clinical history, physical examination, laboratory findings, and other relevant information.
+A positive prediction from the model should not be treated as a definitive diagnosis of Pneumonia. Final interpretation and diagnosis should remain under the responsibility of qualified healthcare professionals, particularly radiologists and physicians who can consider the patient's clinical history, physical examination, laboratory findings, and other relevant information.
 
-This consideration is particularly important for pediatric patients, where incorrect classification could potentially affect clinical decision-making.
-
-Any future clinical implementation would require appropriate validation, monitoring, human oversight, patient safety considerations, and protection of patient privacy.
 
 ---
 
@@ -248,28 +136,11 @@ Any future clinical implementation would require appropriate validation, monitor
 
 ---
 
-## Project Structure
-
-```text
-pediatric-pneumonia-classification/
-│
-├── README.md
-├── notebook/
-│   └── pneumonia_classification.ipynb
-│
-├── images/
-│   └── roc_curve.png
-│
-└── requirements.txt
-```
-
----
-
 ## Author
 
 **Johnnel V. Pangilinan**
 
-Former Radiologic Technologist | Data Science Graduate Student
+Radiologic Technologist | Data Science Graduate Student
 
 This project combines medical imaging experience with machine learning to explore applications of data science in healthcare.
 
@@ -280,3 +151,6 @@ This project combines medical imaging experience with machine learning to explor
 This project is intended for **educational and research purposes only**.
 
 It is not a medical device, diagnostic system, or substitute for professional medical evaluation. The model has not been clinically validated and should not be used to make patient-care decisions.
+
+
+This is especially important for pediatric patients, where incorrect classification could potentially affect clinical decision-making. Therefore, any future clinical implementation would require appropriate validation, monitoring, human oversight, and consideration of patient safety and privacy.
